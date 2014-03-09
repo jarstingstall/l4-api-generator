@@ -6,7 +6,7 @@ use Illuminate\Support\Pluralizer;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateApiCommand extends Command {
+class ApiGenerateCommand extends Command {
 
 	protected $files;
 
@@ -15,7 +15,7 @@ class GenerateApiCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'generate:api';
+	protected $name = 'api:generate';
 
 	/**
 	 * The console command description.
