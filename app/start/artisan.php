@@ -1,5 +1,8 @@
 <?php
 
+use Api\Commands\ApiGenerateCommand;
+use Api\Compilers\ConfigCompiler;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Artisan Commands
@@ -10,4 +13,4 @@
 | the console gets access to each of the command object instances.
 |
 */
-Artisan::add(new Api\Commands\ApiGenerateCommand(App::make('files')));
+Artisan::add(new ApiGenerateCommand(App::make('files'), new ConfigCompiler));

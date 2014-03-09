@@ -2,6 +2,7 @@
 
 use Str;
 use Config;
+use Api\Compilers\ConfigCompiler;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Pluralizer;
@@ -10,7 +11,19 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class ApiGenerateCommand extends Command {
 
+	/**
+	 * Filesystem instance
+	 *
+	 * @var Illuminate\Filesystem\Filesystem
+	 */
 	protected $files;
+
+	/**
+	 * ConfigCompiler instance
+	 *
+	 * @var Api\Compilers\ConfigCompiler
+	 */
+	protected $config;
 
 	/**
 	 * The console command name.
@@ -31,10 +44,11 @@ class ApiGenerateCommand extends Command {
 	 *
 	 * @return void
 	 */
-	public function __construct(Filesystem $files)
+	public function __construct(Filesystem $files, ConfigCompiler $config)
 	{
 		parent::__construct();
 		$this->files = $files;
+		$this->config = $config;
 	}
 
 	/**
@@ -45,7 +59,7 @@ class ApiGenerateCommand extends Command {
 	public function fire()
 	{
 		// read the Config
-		$config = $this->readConfig();
+		$config = $this->config->compile();
 
 		// build Routes
 		$this->files->append(app_path().'/routes.php', $this->buildRoutes($config['prefix'], $config['resources']));
@@ -55,15 +69,6 @@ class ApiGenerateCommand extends Command {
 
 		// build Models
 		$this->buildModels($config['resources']);
-	}
-
-	protected function readConfig()
-	{
-		$driver = Config::get('api-generator.driver');
-		$resources = Config::get('api-generator.resources');
-		$prefix = Config::get('api-generator.prefix');
-
-		return compact('driver', 'resources', 'prefix');
 	}
 
 	protected function buildRoutes($prefix, $resources)
