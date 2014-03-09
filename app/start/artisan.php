@@ -10,4 +10,4 @@
 | the console gets access to each of the command object instances.
 |
 */
-Artisan::add(new GenerateApiCommand(App::make('files')));
+Artisan::add(new ApiGenerateCommand(App::make('files')));
