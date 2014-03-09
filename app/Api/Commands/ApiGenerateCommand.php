@@ -1,4 +1,4 @@
-<?php
+<?php namespace Api\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
@@ -42,11 +42,17 @@ class ApiGenerateCommand extends Command {
 	 */
 	public function fire()
 	{
+		// read the Config
 		$config = $this->readConfig();
 
+		// build Routes
 		$this->files->append(app_path().'/routes.php', $this->buildRoutes($config['prefix'], $config['resources']));
 
+		// build Controllers
 		$this->buildControllers($config['prefix'], $config['resources']);
+
+		// build Models
+		$this->buildModels($config['resources']);
 	}
 
 	protected function readConfig()
@@ -81,6 +87,21 @@ class ApiGenerateCommand extends Command {
         	$stub = str_replace('{{name}}', $name, $stub);
         	$stub = str_replace('{{resource}}', $resource, $stub);
         	$path = app_path()."/controllers/{$name}Controller.php";
+
+        	if (!$this->files->exists($path)) {
+            	$this->files->put($path, $stub);
+        	}
+		}
+	}
+
+	protected function buildModels($resources)
+	{
+		foreach ($resources as $resource) {
+			$model = Str::studly(Pluralizer::singular($resource));
+			$stub = $this->files->get(__DIR__.'/stubs/model.stub');
+
+			$stub = str_replace('{{model}}', $model, $stub);
+			$path = app_path()."/models/{$model}.php";
 
         	if (!$this->files->exists($path)) {
             	$this->files->put($path, $stub);
