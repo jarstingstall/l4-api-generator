@@ -4,12 +4,46 @@ use Config;
 
 class ConfigCompiler
 {
+    /**
+     * Database driver
+     *
+     * @var string
+     */
+    protected $driver;
+
+    /**
+     * Array of resources
+     *
+     * @var array
+     */
+    protected $resources;
+
+    /**
+     * Route prefix
+     *
+     * @var string
+     */
+    protected $prefix;
+
     public function compile()
     {
-        $driver = Config::get('api-generator.driver');
-        $resources = Config::get('api-generator.resources');
-        $prefix = Config::get('api-generator.prefix');
+        $this->driver = Config::get('api-generator.driver');
+        $this->resources = Config::get('api-generator.resources');
+        $this->prefix = Config::get('api-generator.prefix');
+    }
 
-        return compact('driver', 'resources', 'prefix');
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    public function getResources()
+    {
+        return $this->resources;
+    }
+
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 }

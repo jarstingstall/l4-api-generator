@@ -59,16 +59,25 @@ class ApiGenerateCommand extends Command {
 	public function fire()
 	{
 		// read the Config
-		$config = $this->config->compile();
+		$this->config->compile();
 
 		// build Routes
-		$this->files->append(app_path().'/routes.php', $this->buildRoutes($config['prefix'], $config['resources']));
+		$this->files->append(
+			app_path().'/routes.php',
+			$this->buildRoutes(
+				$this->config->getPrefix(),
+				$this->config->getResources()
+			)
+		);
 
 		// build Controllers
-		$this->buildControllers($config['prefix'], $config['resources']);
+		$this->buildControllers(
+			$this->config->getPrefix(),
+			$this->config->getResources()
+		);
 
 		// build Models
-		$this->buildModels($config['resources']);
+		$this->buildModels($this->config->getResources());
 	}
 
 	protected function buildRoutes($prefix, $resources)
