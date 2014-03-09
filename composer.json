@@ -16,7 +16,7 @@
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
-			"Api": "app/Api"
+			"Api": "app/"
 		}
 	},
 	"scripts": {

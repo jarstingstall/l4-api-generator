@@ -1,5 +1,7 @@
 <?php namespace Api\Commands;
 
+use Str;
+use Config;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Pluralizer;
@@ -63,6 +65,7 @@ class ApiGenerateCommand extends Command {
 
 		return compact('driver', 'resources', 'prefix');
 	}
+
 	protected function buildRoutes($prefix, $resources)
 	{
 		$content = "\nRoute::group(array('prefix' => '{$prefix}'), function()\n{";
@@ -81,7 +84,7 @@ class ApiGenerateCommand extends Command {
 		foreach ($resources as $resource) {
 			$name = Str::studly($resource);
 			$resource = Str::studly(Pluralizer::singular($resource));
-			$stub = $this->files->get(__DIR__.'../stubs/controller.eloquent.stub');
+			$stub = $this->files->get(__DIR__.'/../stubs/controller.eloquent.stub');
 
         	$stub = str_replace('{{name}}', $name, $stub);
         	$stub = str_replace('{{resource}}', $resource, $stub);
@@ -97,7 +100,7 @@ class ApiGenerateCommand extends Command {
 	{
 		foreach ($resources as $resource) {
 			$model = Str::studly(Pluralizer::singular($resource));
-			$stub = $this->files->get(__DIR__.'../stubs/model.stub');
+			$stub = $this->files->get(__DIR__.'/../stubs/model.stub');
 
 			$stub = str_replace('{{model}}', $model, $stub);
 			$path = app_path()."/models/{$model}.php";
