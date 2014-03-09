@@ -22,7 +22,7 @@ class GenerateApiCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Generate routes and controller end points for specified resources.';
+	protected $description = 'Generate boilerplate code for your API.';
 
 	/**
 	 * Create a new command instance.
