@@ -2,6 +2,9 @@
 
 use Api\Commands\ApiGenerateCommand;
 use Api\Compilers\ConfigCompiler;
+use Api\Builders\RoutesBuilder;
+use Api\Builders\ModelsBuilder;
+use Api\Builders\ControllersBuilder;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,4 +16,11 @@ use Api\Compilers\ConfigCompiler;
 | the console gets access to each of the command object instances.
 |
 */
-Artisan::add(new ApiGenerateCommand(App::make('files'), new ConfigCompiler));
+Artisan::add(
+    new ApiGenerateCommand(
+        new ConfigCompiler,
+        new RoutesBuilder,
+        new ModelsBuilder,
+        new ControllersBuilder
+    )
+);

@@ -1,22 +1,13 @@
 <?php namespace Api\Commands;
 
-use Str;
-use Config;
-use Api\Compilers\ConfigCompiler;
+use File;
+use Api\Builders\RoutesBuilder;
+use Api\Builders\ModelsBuilder;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Pluralizer;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
+use Api\Compilers\ConfigCompiler;
+use Api\Builders\ControllersBuilder;
 
 class ApiGenerateCommand extends Command {
-
-	/**
-	 * Filesystem instance
-	 *
-	 * @var Illuminate\Filesystem\Filesystem
-	 */
-	protected $files;
 
 	/**
 	 * ConfigCompiler instance
@@ -44,11 +35,17 @@ class ApiGenerateCommand extends Command {
 	 *
 	 * @return void
 	 */
-	public function __construct(Filesystem $files, ConfigCompiler $config)
-	{
+	public function __construct(
+		ConfigCompiler $config,
+		RoutesBuilder $routes,
+		ModelsBuilder $models,
+		ControllersBuilder $controllers
+	) {
 		parent::__construct();
-		$this->files = $files;
 		$this->config = $config;
+		$this->routes = $routes;
+		$this->models = $models;
+		$this->controllers = $controllers;
 	}
 
 	/**
@@ -62,67 +59,22 @@ class ApiGenerateCommand extends Command {
 		$this->config->compile();
 
 		// build Routes
-		$this->files->append(
+		File::append(
 			app_path().'/routes.php',
-			$this->buildRoutes(
+			$this->routes->build(
 				$this->config->getPrefix(),
 				$this->config->getResources()
 			)
 		);
 
 		// build Controllers
-		$this->buildControllers(
+		$this->controllers->build(
 			$this->config->getPrefix(),
 			$this->config->getResources()
 		);
 
 		// build Models
-		$this->buildModels($this->config->getResources());
-	}
-
-	protected function buildRoutes($prefix, $resources)
-	{
-		$content = "\nRoute::group(array('prefix' => '{$prefix}'), function()\n{";
-
-		foreach ($resources as $resource) {
-			$controller = Str::studly($resource) . 'Controller';
-			$resource = str_replace('_', '-', $resource);
-			$content .= "\n\tRoute::resource('{$resource}', '{$controller}', ['except' => ['create', 'edit']]);\n";
-		}
-
-		return $content .= "});";
-	}
-
-	protected function buildControllers($prefix, $resources)
-	{
-		foreach ($resources as $resource) {
-			$name = Str::studly($resource);
-			$resource = Str::studly(Pluralizer::singular($resource));
-			$stub = $this->files->get(__DIR__.'/../stubs/controller.eloquent.stub');
-
-        	$stub = str_replace('{{name}}', $name, $stub);
-        	$stub = str_replace('{{resource}}', $resource, $stub);
-        	$path = app_path()."/controllers/{$name}Controller.php";
-
-        	if (!$this->files->exists($path)) {
-            	$this->files->put($path, $stub);
-        	}
-		}
-	}
-
-	protected function buildModels($resources)
-	{
-		foreach ($resources as $resource) {
-			$model = Str::studly(Pluralizer::singular($resource));
-			$stub = $this->files->get(__DIR__.'/../stubs/model.stub');
-
-			$stub = str_replace('{{model}}', $model, $stub);
-			$path = app_path()."/models/{$model}.php";
-
-        	if (!$this->files->exists($path)) {
-            	$this->files->put($path, $stub);
-        	}
-		}
+		$this->models->build($this->config->getResources());
 	}
 
 }

@@ -7,10 +7,7 @@ return [
     'prefix' => 'v1',
 
     'resources' => [
-        'users',
-        'messages',
-        'call_events',
-        'message_events'
+        'users'
     ]
 
 ];
