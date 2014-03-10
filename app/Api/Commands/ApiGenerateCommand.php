@@ -1,20 +1,13 @@
 <?php namespace Api\Commands;
 
 use File;
+use Config;
 use Api\Builders\RoutesBuilder;
 use Api\Builders\ModelsBuilder;
 use Illuminate\Console\Command;
-use Api\Compilers\ConfigCompiler;
 use Api\Builders\ControllersBuilder;
 
 class ApiGenerateCommand extends Command {
-
-	/**
-	 * ConfigCompiler instance
-	 *
-	 * @var Api\Compilers\ConfigCompiler
-	 */
-	protected $config;
 
 	/**
 	 * The console command name.
@@ -36,16 +29,15 @@ class ApiGenerateCommand extends Command {
 	 * @return void
 	 */
 	public function __construct(
-		ConfigCompiler $config,
 		RoutesBuilder $routes,
 		ModelsBuilder $models,
 		ControllersBuilder $controllers
 	) {
 		parent::__construct();
-		$this->config = $config;
 		$this->routes = $routes;
 		$this->models = $models;
 		$this->controllers = $controllers;
+		$this->config = Config::get('api-generator');
 	}
 
 	/**
@@ -55,26 +47,23 @@ class ApiGenerateCommand extends Command {
 	 */
 	public function fire()
 	{
-		// read the Config
-		$this->config->compile();
-
 		// build Routes
 		File::append(
 			app_path().'/routes.php',
 			$this->routes->build(
-				$this->config->getPrefix(),
-				$this->config->getResources()
+				$this->config['prefix'],
+				$this->config['resources']
 			)
 		);
 
 		// build Controllers
 		$this->controllers->build(
-			$this->config->getPrefix(),
-			$this->config->getResources()
+			$this->config['prefix'],
+			$this->config['resources']
 		);
 
 		// build Models
-		$this->models->build($this->config->getResources());
+		$this->models->build($this->config['resources']);
 	}
 
 }

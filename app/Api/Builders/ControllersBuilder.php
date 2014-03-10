@@ -4,18 +4,23 @@ use Str;
 use File;
 use Illuminate\Support\Pluralizer;
 
-class ControllersBuilder
+class ControllersBuilder extends Builder
 {
     public function build($prefix, $resources)
     {
         foreach ($resources as $resource) {
-            $name = Str::studly($resource);
-            $resource = Str::studly(Pluralizer::singular($resource));
-            $stub = File::get(__DIR__.'/../stubs/controller.eloquent.stub');
 
-            $stub = str_replace('{{name}}', $name, $stub);
+            if (strpos($resource, '.') !== false) {
+                $resource = $this->getNestedResource($resource);
+            }
+
+            $resource = Str::studly($resource);
+            $model = $this->getModelName($resource);
+
+            $stub = File::get(__DIR__.'/../stubs/controller.eloquent.stub');
             $stub = str_replace('{{resource}}', $resource, $stub);
-            $path = app_path()."/controllers/{$name}Controller.php";
+            $stub = str_replace('{{model}}', $model, $stub);
+            $path = app_path()."/controllers/{$resource}Controller.php";
 
             if (!File::exists($path)) {
                 File::put($path, $stub);

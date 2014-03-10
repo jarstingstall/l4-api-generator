@@ -1,7 +1,6 @@
 <?php
 
 use Api\Commands\ApiGenerateCommand;
-use Api\Compilers\ConfigCompiler;
 use Api\Builders\RoutesBuilder;
 use Api\Builders\ModelsBuilder;
 use Api\Builders\ControllersBuilder;
@@ -18,7 +17,6 @@ use Api\Builders\ControllersBuilder;
 */
 Artisan::add(
     new ApiGenerateCommand(
-        new ConfigCompiler,
         new RoutesBuilder,
         new ModelsBuilder,
         new ControllersBuilder
